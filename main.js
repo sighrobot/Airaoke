@@ -23,9 +23,11 @@ var lastMove = 0;
 
 doppler.init(function(bandwidth) {
     difference = bandwidth.right - bandwidth.left - 1;
-    console.log(difference);
+
+    var velocity = (difference-15)/12
+    console.log(velocity);
     if (toggle1.val.value) {
-        playBongo(difference);
+        playBongo(difference, velocity);
     }
     if (toggle2.val.value) {
         playSnare(difference);
@@ -35,17 +37,18 @@ doppler.init(function(bandwidth) {
     }
 });
 
-var lastVal = 0;
-var bongoCount = 0;
+var lastVal = 0,
+    bongoCount = 0,
+    threshold = 15;
 
-playBongo = function(diff) {
-    if (diff > 15 && Date.now() - lastMove > 75) {
+playBongo = function(diff, vel) {
+    if (diff > threshold && Date.now() - lastMove > 75) {
 
         if (bongoCount < 3) {
-            bongo.triggerAttack("bongo_hit");
+            bongo.triggerAttack("bongo_hit", 0, vel);
             bongoCount++;
         } else {
-            bongo.triggerAttack("bongo_slap");
+            bongo.triggerAttack("bongo_slap", 0, vel);
             bongoCount = 0;
         }
         lastMove = Date.now();
@@ -54,7 +57,7 @@ playBongo = function(diff) {
 }
 
 playSnare = function(diff) {
-    if (diff > 15 && Date.now() - lastMove > 50) {
+    if (diff > threshold && Date.now() - lastMove > 50) {
 
         snare.triggerAttack("snare");
         lastMove = Date.now();
@@ -64,7 +67,7 @@ playSnare = function(diff) {
 
 var guitarCount = 1;
 playGuitar = function(diff) {
-    if (diff > 15 && Date.now() - lastMove > 150) {
+    if (diff > threshold && Date.now() - lastMove > 150) {
 
         if (guitarCount > 8) {
             guitarCount = 1;
