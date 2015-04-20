@@ -20,10 +20,16 @@ var guitar = new Tone.Sampler({
 
 
 var lastMove = 0;
+var lastVal = 0;
+
+var isRecording = false;
+var recordingStartTime = 0;
+var recordingData = [];
+
 
 doppler.init(function(bandwidth) {
     difference = bandwidth.right - bandwidth.left - 1;
-    console.log(difference);
+    //console.log(difference);
     if (toggle1.val.value) {
         playBongo(difference);
     }
@@ -35,9 +41,8 @@ doppler.init(function(bandwidth) {
     }
 });
 
-var lastVal = 0;
-var bongoCount = 0;
 
+var bongoCount = 0;
 playBongo = function(diff) {
     if (diff > 15 && Date.now() - lastMove > 75) {
 
@@ -49,18 +54,22 @@ playBongo = function(diff) {
             bongoCount = 0;
         }
         lastMove = Date.now();
+        if (isRecording) recordHit(lastMove - recordingStartTime);
     }
     lastVal = diff;
 }
+
 
 playSnare = function(diff) {
     if (diff > 15 && Date.now() - lastMove > 50) {
 
         snare.triggerAttack("snare");
         lastMove = Date.now();
+        if (isRecording) recordHit(lastMove - recordingStartTime);
     }
     lastVal = diff;
 }
+
 
 var guitarCount = 1;
 playGuitar = function(diff) {
@@ -74,11 +83,31 @@ playGuitar = function(diff) {
         guitarCount++;
 
         lastMove = Date.now();
-        lastVal = diff;
+        if (isRecording) recordHit(lastMove - recordingStartTime);
     }
-
-
+    lastVal = diff;
 }
+
+
+var recordHit = function(t) {
+    recordingData.push(t);
+    console.log('recorded hit ' + t/1000 + 's from start');
+    //console.log(recordingData);
+}
+
+var toggleRecordingOnOff = function() {
+    if (isRecording) {
+        isRecording = false;
+        console.log('recording turned off');
+    }
+    else {
+        recordingStartTime = Date.now();
+        recordingData = [];
+        isRecording = true;
+        console.log('recording turned on');
+    }
+}
+
 
 //saving for later
 // var total = 0;
