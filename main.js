@@ -67,7 +67,6 @@ playBongo = function(diff, vel) {
     lastVal = diff;
 }
 
-
 playSnare = function(diff, vel) {
     if (diff > threshold && Date.now() - lastMove > 50) {
 
@@ -122,41 +121,43 @@ var toggleRecordingOnOff = function() {
     }
 }
 
+var clickSampler = new Tone.Sampler({
+    "loClickSample": "./samples/click/woodBlockLo.wav",
+    "hiClickSample": "./samples/click/woodBlockHi.wav"
+}).toMaster();
+
+var score = {
+    "hiClick": [
+        ["0"]
+    ],
+    "loClick": [
+        ["4n"],
+        ["4n * 2"],
+        ["4n * 3"],
+    ]
+};
+Tone.Note.parseScore(score);
 
 
 
-var isPlayingClick = false;
-var playClickTrack = function() {
-    if (isPlayingClick) {
-        isPlayingClick = false;
-        click.volume.value = -70;
-    } else {
-        this.click = new Tone.Sampler({
-            "loClickSample": "./samples/click/woodBlockLo.wav",
-            "hiClickSample": "./samples/click/woodBlockHi.wav"
-        }).toMaster();
+nx.onload = function() {
+    click.on("*", function(data) {
+        console.log(data.value);
 
-        this.score = {
-            "hiClick": [
-                ["0"]
-            ],
-            "loClick": [
-                ["4n"],
-                ["4n * 2"],
-                ["4n * 3"],
-            ]
-        };
-        Tone.Note.parseScore(score);
-        Tone.Note.route("hiClick", function(time) {
-            click.triggerAttack("hiClickSample", time);
-        });
-        Tone.Note.route("loClick", function(time) {
-            click.triggerAttack("loClickSample", time);
-        });
-        isPlayingClick = true;
-        click.volume.value = -12;
-    }
-}
+        if (data.value) {
+            Tone.Note.route("hiClick", function(time) {
+                clickSampler.triggerAttack("hiClickSample", time);
+            });
+            Tone.Note.route("loClick", function(time) {
+                clickSampler.triggerAttack("loClickSample", time);
+            });
+            clickSampler.volume.value = -12;
+        } else {
+            clickSampler.volume.value = -70;
+
+        }
+    });
+};
 
 Tone.Transport.start();
 

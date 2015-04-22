@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
     <script type="text/javascript" src="https://rawgit.com/lsu-emdm/nexusUI/master/dist/nexusUI.js"></script>
     <script src="doppler.js"></script>
     <script src="tone.min.js"></script>
@@ -9,11 +10,18 @@
 </head>
 
 <body>
-    <canvas nx="toggle" style="margin-left: 25px; width: 50px; height: 50px;" id="toggle1" height="100" width="100"></canvas>
-    <canvas nx="toggle" style="margin-left: 25px; width: 50px; height: 50px;" id="toggle2" height="100" width="100"></canvas>
-    <canvas nx="toggle" style="margin-left: 25px; width: 50px; height: 50px;" id="toggle3" height="100" width="100"></canvas>
-    <canvas nx="toggle" style="margin-left: 25px; width: 50px; height: 50px;" id="record" height="100" width="100" onclick="toggleRecordingOnOff()"></canvas>
-    <canvas nx="toggle" style="margin-left: 25px; width: 50px; height: 50px;" id="click" height="100" width="100" onclick="playClickTrack()"></canvas>
+    Bongo
+    <canvas nx="toggle" style="margin-right: 25px; margin-left: 25px; width: 50px; height: 50px;" id="toggle1" height="100" width="100"></canvas>
+    Clap
+    <canvas nx="toggle" style="margin-right: 25px; margin-left: 25px; width: 50px; height: 50px;" id="toggle2" height="100" width="100"></canvas>
+    Guitar
+    <canvas nx="toggle" style="margin-right: 25px; margin-left: 25px; width: 50px; height: 50px;" id="toggle3" height="100" width="100"></canvas>
+    Record
+    <canvas nx="toggle" style="margin-right: 25px; margin-left: 25px; width: 50px; height: 50px;" id="record" height="100" width="100" onclick="toggleRecordingOnOff()"></canvas>
+    Click Track
+    <canvas nx="toggle" style="margin-right: 25px; margin-left: 25px; width: 50px; height: 50px;" id="click" height="100" width="100"></canvas>
+    Bongo Loop
+    <canvas nx="toggle" style="margin-right: 25px; margin-left: 25px; width: 50px; height: 50px;" id="bongoLoop" height="100" width="100" onclick="bongoLoop()"></canvas>
 </body>
 <footer>
 </footer>
