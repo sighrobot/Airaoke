@@ -26,18 +26,22 @@ var isRecording = false;
 var recordingStartTime = 0;
 var recordingData = [];
 
+Tone.Transport.loop = true;
+Tone.Transport.setLoopPoints(0, "1:0:0");
+Tone.Transport.bpm.value = 120;
+
 
 doppler.init(function(bandwidth) {
     difference = bandwidth.right - bandwidth.left - 1;
 
     var velocity = (difference - 15) / 12
-    console.log(velocity);
+        //console.log(velocity);
 
     if (toggle1.val.value) {
         playBongo(difference, velocity);
     }
     if (toggle2.val.value) {
-        playSnare(difference);
+        playSnare(difference, velocity);
     }
     if (toggle3.val.value) {
         playGuitar(difference);
@@ -51,10 +55,10 @@ playBongo = function(diff, vel) {
     if (diff > threshold && Date.now() - lastMove > 75) {
 
         if (bongoCount < 3) {
-            bongo.triggerAttack("bongo_hit", 0, vel);
+            bongo.triggerAttack("bongo_hit"); //, 0, vel);
             bongoCount++;
         } else {
-            bongo.triggerAttack("bongo_slap", 0, vel);
+            bongo.triggerAttack("bongo_slap"); //, 0, vel);
             bongoCount = 0;
         }
         lastMove = Date.now();
@@ -64,10 +68,10 @@ playBongo = function(diff, vel) {
 }
 
 
-playSnare = function(diff) {
+playSnare = function(diff, vel) {
     if (diff > threshold && Date.now() - lastMove > 50) {
 
-        snare.triggerAttack("snare");
+        snare.triggerAttack("snare", 0, vel);
         lastMove = Date.now();
         if (isRecording) recordHit(lastMove - recordingStartTime);
     }
@@ -92,10 +96,17 @@ playGuitar = function(diff) {
     lastVal = diff;
 }
 
+var measureTime = Tone.Transport.bpm.value * 1000 / 240;
+console.log(measureTime);
 
 var recordHit = function(t) {
-    recordingData.push(t);
-    console.log('recorded hit ' + t / 1000 + 's from start');
+    if (Date.now() - recordingStartTime < measureTime * 4) {
+        recordingData.push(t);
+        console.log('recorded hit ' + t / 1000 + 's from start');
+    } else {
+
+    }
+
     //console.log(recordingData);
 }
 
@@ -111,6 +122,60 @@ var toggleRecordingOnOff = function() {
     }
 }
 
+
+
+
+var isPlayingClick = false;
+var playClickTrack = function() {
+    if (isPlayingClick) {
+        isPlayingClick = false;
+        click.volume.value = -70;
+    } else {
+        this.click = new Tone.Sampler({
+            "loClickSample": "./samples/click/woodBlockLo.wav",
+            "hiClickSample": "./samples/click/woodBlockHi.wav"
+        }).toMaster();
+
+        this.score = {
+            "hiClick": [
+                ["0"]
+            ],
+            "loClick": [
+                ["4n"],
+                ["4n * 2"],
+                ["4n * 3"],
+            ]
+        };
+        Tone.Note.parseScore(score);
+        Tone.Note.route("hiClick", function(time) {
+            click.triggerAttack("hiClickSample", time);
+        });
+        Tone.Note.route("loClick", function(time) {
+            click.triggerAttack("loClickSample", time);
+        });
+        isPlayingClick = true;
+        click.volume.value = -12;
+    }
+}
+
+Tone.Transport.start();
+
+// var click = new Tone.Sampler({
+//     "loClickSample": "./samples/click/woodBlockLo.wav",
+//     "hiClickSample": "./samples/click/woodBlockHi.wav"
+// }).toMaster();
+
+// var isPlayingClick = false;
+// var playClickTrack = function() {
+//     if (isPlayingClick) {
+//         isPlayingClick = false;
+
+//     } else {
+//         Tone.Transport.setInterval(function(time) {
+//             clic.triggerAttackRelease();
+//         }, "4n");
+//     }
+// }
 
 //saving for later
 // var total = 0;
